@@ -1,39 +1,61 @@
 import math
 from sympy import totient as eulerFunction
 import random
-import egcd
+import string
 
-# returns Coprime integer to eulerFuncOfn, the only integer that shares a divisor of 1 with eulerFuncOfn
-def generateE(eulerFuncOfn):
-    e = random.randint(1,eulerFuncOfn) #Return a random int in the range(1,eulerFuncOfn)
-    while math.gcd(e, eulerFuncOfn) != 1:
-        e = random.randint(1,eulerFuncOfn)
+
+# returns Co-prime integer to fn, the only integer that shares a divisor of 1 with fn
+def generateE(fn):
+    e = random.randint(2,fn - 1) #Return a random int in the range(1,fn)
+    #TODO: more efficient 
+    while math.gcd(e, fn) != 1: #while the numbers have a common divider
+        e = random.randint(2,fn - 1)
     return e
 #
-def encrypt(message): 
-    return math.pow(message,publicKey[1]) % publicKey[0] 
+def generateD(fn, e):
+    k = 2
+    d = round((k * fn + 1) / e)
+    while (((k * fn + 1) % e) != 0 or d == e) :
+        k = k + 1
+        d = round((k * fn + 1) / e)
+    return d
+
 
 #
-def decrypt(encryptedMessage): 
-    return math.pow(encryptedMessage,d) % publicKey[0] 
+def encrypt(plainLetter,e,mod): 
+    return math.pow(plainLetter,e) % mod 
+
+#
+def decrypt(encryptedLetter,privateKey,publicMod): 
+    return math.pow(encryptedLetter,privateKey) % publicMod
 
 
 
 if __name__ == '__main__': 
     message = str(input("Enter the message to be encrypted: "))
     #step 1:
-    p = 11
+    p = 2
     q = 7
     #step 2:
     n = p*q
     #step 3:
-    En = eulerFunction((p-1)*(q-1))
+    Fn = (p-1)*(q-1)
     #step 4:
-    e = generateE(En)
+    e = 5 
+    #generateE(Fn) #
+    d = generateD(Fn,e) # to get e the attacker needs to get p and q and that is impossible 
+    
+    publicKey = [Fn,n]
+    privateKey = d
 
-    global publicKey #this is what transmitted and public so accordingly I make it public in the program
-    publicKey = [n,e]
-    #d = egcd()
+    print(list([ord(letter) - 96 for letter in message]))
     # for each letter I get ascii value encrypt it then convert back to ascii and add to a list  
-    encryptedMessage = list([chr(int(encrypt((ord(letter))))) for letter in message])
+    encryptedMessage = list([(int(encrypt((ord(letter) - 96), e, n))) for letter in message])
     print(encryptedMessage)
+    decryptedMessage = list([int(decrypt(letter,privateKey,n)) for letter in encryptedMessage])
+    print(decryptedMessage)
+
+    temp  = list([(int(encrypt((ord(letter) - 96), e, n))) for letter in string.ascii_lowercase])
+    print(list([(ord(letter) - 96) for letter in string.ascii_lowercase]))
+    print(temp)
+    print(list([(int(decrypt(letter,privateKey,n))) for letter in temp]))
