@@ -2,8 +2,6 @@ import math
 import random
 
 # returns Co-prime integer to fn, the only integer that shares a divisor of 1 with fn, which
-
-
 def generateE(fn):
     e = random.randint(2, fn - 1)  # Return a random int in the range(1,fn)
     # TODO: more efficient
@@ -50,10 +48,13 @@ if __name__ == '__main__':
     privateKey = d
 
     # original message in decimal
+    print("original message: ")
     print(list([ord(letter) - 96 for letter in message]))
     # for each letter I get ascii value encrypt it and add to a list
     encryptedMessage = list([(int(encrypt((ord(letter) - 96), e, n))) for letter in message])
+    print("encrypted message:")
     print(encryptedMessage)
     # for each letter I decrypt it using the private key and add to a list
     decryptedMessage = list([int(decrypt(letter, privateKey, n)) for letter in encryptedMessage])
+    print("decrypted message: ")
     print(decryptedMessage)
