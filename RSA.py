@@ -29,22 +29,21 @@ def encrypt(plainLetter, e, mod):
     return pow(plainLetter, e) % mod
 
 # takes letter mod (public key) and private key and decrypts according to rsa formula
-
-
 def decrypt(encryptedLetter, privateKey, mod):
     return pow(encryptedLetter, privateKey) % mod
 
-
 if __name__ == '__main__':
     message = str(input("Enter the message to be encrypted: "))
+    
     # in the real world p and q are 2 large prime numbers, to save resources and time I used smaller ones
-    p = 11
+    p = 5
     q = 7
     # preparing the public key:
     n = p*q
     Fn = (p-1)*(q-1)
     e = generateE(Fn)
     # that how a public key may look like
+    global publicKey
     publicKey = [e, n]
     d = generateD(Fn, e)
     # to get e the attacker needs to get p and q and that is impossible, thus d is the private key
